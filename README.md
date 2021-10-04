@@ -1,1 +1,1 @@
-# DynamicDataAugmentation-For-TimeSeries
+# DynamicDataAugmentation-with-GatingNetworks
