@@ -3,7 +3,7 @@ This is an official PyTorch implementations of the paper *Dynamic Data Augmentat
 
 ## Results
 
-## How to
+## Usage
 
 ### Environment
 
@@ -13,11 +13,12 @@ In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~e
 ### Guidance
 
 #### Data Augmentation methods
-* Identity
-* Jittering
-* Magnitude Warping
-* Time Warping
-* Window Warping
+Each DA method implementations is based on [Keras codes](https://github.com/uchidalab/time_series_augmentation) from [a preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841) published by our group.
+* Identity --- the original time series with no augmentation.  
+* Jittering --- adds Gaussian noise to the time series.  
+* Magnitude Warping --- multiply the time series by a smooth curve defined by cublic spline.  
+* Time Warping --- similar to Magnitude Warping, except the warping is done in the time domain.  
+* Window Warping --- selects a random window of 10% of the original time series length and warps the window by 0.5 to 2 times.  
 
 #### Hyperparameteres
 
