@@ -13,7 +13,7 @@ In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~e
 ### Guidance
 
 #### Data Augmentation methods
-Each DA method implementations is based on [Keras codes](https://github.com/uchidalab/time_series_augmentation) from [a preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841) published by our group.
+Each DA method implementation is based on [Keras codes](https://github.com/uchidalab/time_series_augmentation) from [a preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841) published by our group.
 * Identity --- the original time series with no augmentation.  
 * Jittering --- adds Gaussian noise to the time series.  
 * Magnitude Warping --- multiply the time series by a smooth curve defined by cublic spline.  
