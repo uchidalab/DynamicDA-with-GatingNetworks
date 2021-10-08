@@ -5,7 +5,7 @@ This is an official PyTorch implementations of the paper *Dynamic Data Augmentat
 
 ## How to
 
-### Installation
+### Environment
 
 #### Dataset
 In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~eamonn/time_series_data_2018/).  
