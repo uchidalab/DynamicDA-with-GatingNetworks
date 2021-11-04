@@ -20,7 +20,7 @@ Please extract this file at ```/dataset```.
 For execution, you just need to run ```experiment.sh```.  
 
 #### Data Augmentation methods
-Each DA method implementation is based on [Keras codes](https://github.com/uchidalab/time_series_augmentation) from [a preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841) published by our group.
+Each DA method implementation is based on [Keras codes](https://github.com/uchidalab/time_series_augmentation) from [our preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841).
 * Identity --- the original time series with no augmentation.  
 * Jittering --- adds Gaussian noise to the time series.  
 * Magnitude Warping --- multiply the time series by a smooth curve defined by cublic spline.  
