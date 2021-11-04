@@ -11,10 +11,7 @@ import torch.nn.functional as F
 
 from model.dda import *
 from utils.dataload import data_generator
-from utils.draw_graphs import draw_graph, draw_hist
 from utils.write_csv import *
-from utils.alphavis import alpha_pca, read_save_png, alpha_hist, alpha_number_line
-from utils.feature_pca import feature_pca, feature_by_class, feature_samples
 
 parser = argparse.ArgumentParser(description='Sequence Modeling')
 parser.add_argument('--batch_size', type=int, default=256, metavar='N',
@@ -39,10 +36,6 @@ parser.add_argument('--da5', default='timeWarp',
                     help='Data Augmentation 5 (default: timeWarp)')
 parser.add_argument('--consis_lambda', type=float, default=1.0,
                     help='weights for consistency loss')
-parser.add_argument('--server_id', type=int, default=0,
-                    help='when run on local, set it to 0.')
-parser.add_argument('--limit_num', type=int, default=300,
-                    help='max vizualized samples')
 parser.add_argument('--seed', default=1111,
                     help='random seed')
 args = parser.parse_args()
@@ -161,6 +154,7 @@ def train(ep):
         optimizer.step()
         
         train_loss += loss
+    
     train_loss /= len(train_loader.dataset)
     params_mean1 /= len(train_loader.dataset)
     params_mean2 /= len(train_loader.dataset)
@@ -250,51 +244,6 @@ def test(epoch, feature_img_path=None):
         params_mean5 /= len(test_loader.dataset)
         print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
             test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset), da1, params_mean1[0], da2, params_mean2[0], da3, params_mean3[0], da4, params_mean4[0], da5, params_mean5[0]))
-        
-        random.seed(42) # must
-        idx_list = np.arange(len(target_list))
-        if len(target_list)>limit_num:
-            idx_list = random.sample(list(idx_list), limit_num)
-            draw_p1 = itemgetter(idx_list)(params_list1[:])
-            draw_p2 = itemgetter(idx_list)(params_list2[:])
-            draw_p3 = itemgetter(idx_list)(params_list3[:])
-            draw_p4 = itemgetter(idx_list)(params_list4[:])
-            draw_p5 = itemgetter(idx_list)(params_list5[:])
-            draw_target = itemgetter(idx_list)(target_list)
-            draw_pred = itemgetter(idx_list)(pred_list)
-            draw_z1 = itemgetter(idx_list)(z1_list[:])
-            draw_z2 = itemgetter(idx_list)(z2_list[:])
-            draw_z3 = itemgetter(idx_list)(z3_list[:])
-            draw_z4 = itemgetter(idx_list)(z4_list[:])
-            draw_z5 = itemgetter(idx_list)(z5_list[:])
-            draw_z = itemgetter(idx_list)(z_list[:])
-        else:
-            draw_p1 = params_list1[:]
-            draw_p2 = params_list2[:]
-            draw_p3 = params_list3[:]
-            draw_p4 = params_list4[:]
-            draw_p5 = params_list5[:]
-            draw_target = target_list
-            draw_pred = pred_list
-            draw_z1 = z1_list[:]
-            draw_z2 = z2_list[:]
-            draw_z3 = z3_list[:]
-            draw_z4 = z4_list[:]
-            draw_z5 = z5_list[:]
-            draw_z = z_list[:]
-        
-        #alpha_pca(idx_list, draw_target, draw_pred, data_name, da1, draw_p1, da2, draw_p2, da3, draw_p3, da4, draw_p4, da5, draw_p5, epoch, 100. * correct / len(test_loader.dataset), args.consis_lambda, dataset_path, True)
-        # only when using saved model
-        #feature_pca("TSNE", data_name, da1, draw_z1, params_mean1[0], da2, draw_z2, params_mean2[0], da3, draw_z3, params_mean3[0], da4, draw_z4, params_mean4[0], da5, draw_z5, params_mean5[0], epoch, 100*correct/len(test_loader.dataset), './', args.consis_lambda)
-        #feature_by_class("TSNE", data_name, draw_z, draw_target, epoch, 100*correct/len(test_loader.dataset), './', args.consis_lambda)
-        #feature_samples(data_name, idx_list, draw_z, draw_target, draw_pred, da1, draw_p1, epoch, 100*correct/len(test_loader.dataset), './', args.consis_lambda) # combined f
-        #feature_samples(data_name, idx_list, draw_z1, draw_target, draw_pred, 'identity-z1', draw_p1, epoch, 100*correct/len(test_loader.dataset), './', args.consis_lambda) # identity f
-        #save_dir = "./5DAvis_{}".format(data_name)
-        #if not os.path.exists(save_dir):
-        #    os.makedirs(save_dir)
-        #read_save_png(draw_target, pred_list, idx_list, data_name, epoch, dataset_path, save_dir, "TEST", draw_p1, draw_p2, draw_p3, draw_p4, draw_p5)
-        #alpha_hist(save_dir+"/histogram.png", draw_p1, draw_p2, draw_p3, draw_p4, draw_p5, draw_target, da1, da2, da3, da4, da5)
-        #alpha_number_line(idx_list, draw_p1.flatten(), draw_target, draw_pred, data_name, 'identity', 'others', epoch, 100. * correct / len(test_loader.dataset), dataset_path, args.consis_lambda, True, by_class=True)
         
         torch.cuda.empty_cache()
         

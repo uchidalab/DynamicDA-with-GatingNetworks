@@ -11,10 +11,7 @@ import torch.nn.functional as F
 
 from model.dda import *
 from utils.dataload import data_generator
-from utils.draw_graphs import draw_graph, draw_hist
 from utils.write_csv import *
-from utils.alphavis import alpha_number_line, read_save_png
-from utils.feature_pca import feature_pca, feature_by_class
 
 parser = argparse.ArgumentParser(description='Sequence Modeling')
 parser.add_argument('--batch_size', type=int, default=256, metavar='N',
@@ -29,14 +26,8 @@ parser.add_argument('--dataset', default='Crop',
                     help='UCR dataset (default: Crop)')
 parser.add_argument('--da', default='identity',
                     help='Data Augmentation (default: identity)')
-parser.add_argument('--shareWeights', action='store_true',
-                    help='share network weights')
-parser.add_argument('--consis_lambda', type=float, default=1.0,
-                    help='weights for consistency loss')
 parser.add_argument('--server_id', type=int, default=0,
                     help='when run on local, set it to 0.')
-parser.add_argument('--limit_num', type=int, default=300,
-                    help='max vizualized samples')
 parser.add_argument('--seed', default=1111,
                     help='random seed')
 args = parser.parse_args()

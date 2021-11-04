@@ -11,10 +11,7 @@ import torch.nn.functional as F
 
 from model.dda import *
 from utils.dataload import data_generator
-from utils.draw_graphs import draw_graph, draw_hist
 from utils.write_csv import *
-from utils.alphavis import alpha_pca
-from utils.feature_pca import feature_pca
 
 parser = argparse.ArgumentParser(description='Sequence Modeling')
 parser.add_argument('--batch_size', type=int, default=256, metavar='N',
@@ -37,12 +34,6 @@ parser.add_argument('--da4', default='magnitudeWarp',
                     help='Data Augmentation 4 (default: magnitudeWarp)')
 parser.add_argument('--da5', default='timeWarp',
                     help='Data Augmentation 5 (default: timeWarp)')
-parser.add_argument('--consis_lambda', type=float, default=1.0,
-                    help='weights for consistency loss')
-parser.add_argument('--server_id', type=int, default=0,
-                    help='when run on local, set it to 0.')
-parser.add_argument('--limit_num', type=int, default=300,
-                    help='max vizualized samples')
 parser.add_argument('--seed', default=1111,
                     help='random seed')
 args = parser.parse_args()
@@ -137,6 +128,7 @@ def train(ep):
         optimizer.step()
         
         train_loss += loss
+    
     train_loss /= len(train_loader.dataset)
     #print('     Train set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%)'.format(
     #    train_loss, correct, len(train_loader.dataset), 100. * correct / len(train_loader.dataset)))
@@ -194,36 +186,13 @@ def test(epoch, feature_img_path=None):
         test_loss /= len(test_loader.dataset)
         print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%)'.format(
             test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset)))
-        
-        random.seed(42) # must
-        idx_list = np.arange(len(target_list))
-        if len(target_list)>limit_num:
-            idx_list = random.sample(list(idx_list), limit_num)
-            draw_target = itemgetter(idx_list)(target_list)
-            draw_pred = itemgetter(idx_list)(pred_list)
-            draw_z1 = itemgetter(idx_list)(z1_list[:])
-            draw_z2 = itemgetter(idx_list)(z2_list[:])
-            draw_z3 = itemgetter(idx_list)(z3_list[:])
-            draw_z4 = itemgetter(idx_list)(z4_list[:])
-            draw_z5 = itemgetter(idx_list)(z5_list[:])
-        else:
-            draw_target = target_list
-            draw_pred = pred_list
-            draw_z1 = z1_list[:]
-            draw_z2 = z2_list[:]
-            draw_z3 = z3_list[:]
-            draw_z4 = z4_list[:]
-            draw_z5 = z5_list[:]
-        
-        # only when using saved model
-        #feature_pca("TSNE", data_name, da1, draw_z1, -1, da2, draw_z2, -1, da3, draw_z3, -1, da4, draw_z4, -1, da5, draw_z5, -1, epoch, 100*correct/len(test_loader.dataset), './', -1)
-        
+          
         torch.cuda.empty_cache()
         
         return test_loss, correct / len(test_loader.dataset), -1, -1, -1, -1, -1
 
 def test_model():
-    base_path = './result/Concat_{}_identity-jitter-windowWarp-magnitudeWarp-timeWarp_{}_{}'.format(data_name, args.consis_lambda, epochs)
+    base_path = './result/Concat_{}_identity-jitter-windowWarp-magnitudeWarp-timeWarp_1.0_{}'.format(data_name, epochs)
     ts_encoder1.load_state_dict(torch.load(base_path+'/ts_encoder1.pth', map_location='cuda:0'))
     ts_encoder2.load_state_dict(torch.load(base_path+'/ts_encoder2.pth', map_location='cuda:0'))
     ts_encoder3.load_state_dict(torch.load(base_path+'/ts_encoder3.pth', map_location='cuda:0'))
@@ -246,10 +215,10 @@ if __name__ == "__main__":
             detached_train_acc, detached_train_loss = train_acc.to('cpu').detach().numpy().tolist(), train_loss.to('cpu').detach().numpy().tolist()
             detached_test_acc, detached_test_loss = test_acc.to('cpu').detach().numpy().tolist(), test_loss.to('cpu').detach().numpy().tolist()
             detached_p1, detached_p2, detached_p3, detached_p4, detached_p5 = p1, p2, p3, p4, p5
-            update_csv_ts5(data_name, 'Concat', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, detached_p1, da2, detached_p2, da3, detached_p3, da4, detached_p4, da5, detached_p5, args.consis_lambda, now, otherparams=None)
+            update_csv_ts5(data_name, 'Concat', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, detached_p1, da2, detached_p2, da3, detached_p3, da4, detached_p4, da5, detached_p5, 1.0, now, otherparams=None)
             
             if epoch==epochs:
-                model_save_path = './result/Concat_{}_{}-{}-{}-{}-{}_{}_{}/'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, args.consis_lambda, epoch)
+                model_save_path = './result/Concat_{}_{}-{}-{}-{}-{}_{}_{}/'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, 1.0, epoch)
                 if not os.path.exists(model_save_path):
                     os.makedirs(model_save_path)
                 torch.save(ts_encoder1.state_dict(), model_save_path+'ts_encoder1.pth')
