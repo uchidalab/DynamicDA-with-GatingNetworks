@@ -124,8 +124,8 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 
-# DynamicDA
-dataset/
+# DynamicDA-with-GatingNetworks
+dataset/UCRArchive_2018/
 dmypy.json
 
 # Pyre type checker
