@@ -1,7 +1,5 @@
 # Dynamic Data Augmentation with Gating Networks
 This is an official PyTorch implementation of the paper *Dynamic Data Augmentation with Gating Networks* which is submitted to **ICASSP2022** (under reviewing).  
-The full codes and descriptions are coming soon. (Hopefully, in Oct.)  
-## Results
 
 ## Usage
 
@@ -9,8 +7,17 @@ The full codes and descriptions are coming soon. (Hopefully, in Oct.)
 
 #### Dataset
 In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~eamonn/time_series_data_2018/).  
+You can download our modified UCR dataset from [here](https://drive.google.com/file/d/1w1--ckigeF-PPzbwa7_6ghJdPqo7P3_P/view?usp=sharing).  
+Please extract this file at ```/dataset```.  
 
 ### Guidance
+
+#### Models
+* No Augmentation --- refer to ```no_augmentation.py```.  
+* Concatenate --- refer to ```concat.py```.  
+* Proposed --- refer to ```proposed.py```.  
+
+For execution, you just need to run ```experiment.sh```.  
 
 #### Data Augmentation methods
 Each DA method implementation is based on [Keras codes](https://github.com/uchidalab/time_series_augmentation) from [a preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841) published by our group.
