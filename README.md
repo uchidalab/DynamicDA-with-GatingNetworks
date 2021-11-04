@@ -27,6 +27,5 @@ Each DA method implementation is based on [Keras codes](https://github.com/uchid
 * Time Warping --- similar to Magnitude Warping, except the warping is done in the time domain.  
 * Window Warping --- selects a random window of 10% of the original time series length and warps the window by 0.5 to 2 times.  
 
-#### Hyperparameters
-
 ## Citation
+coming soon...  
