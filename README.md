@@ -28,4 +28,12 @@ Each DA method implementation is based on [Keras codes](https://github.com/uchid
 * Window Warping --- selects a random window of 10% of the original time series length and warps the window by 0.5 to 2 times.  
 
 ## Citation
-coming soon...  
+D. Oba, S. Matsuo and B.K. Iwana, "Dynamic Data Augmentation with Gating Networks," arXiv, 2021.  
+```
+@article{oba2021,
+  title={Dynamic Data Augmentation with Gating Networks},
+  author={Daisuke Oba, Shinnosuke Matsuo and Iwana Brian Kenji},
+  journal={arXiv preprint arXiv:????.?????},
+  year={2021}
+}
+```
