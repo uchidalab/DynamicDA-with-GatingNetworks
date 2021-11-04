@@ -135,7 +135,7 @@ def train(ep):
             
     return train_loss, correct/len(train_loader.dataset)
 
-def test(epoch, feature_img_path=None):
+def test(epoch):
     global now
     test_loss = 0.
     correct = 0
@@ -186,8 +186,6 @@ def test(epoch, feature_img_path=None):
         test_loss /= len(test_loader.dataset)
         print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%)'.format(
             test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset)))
-          
-        torch.cuda.empty_cache()
         
         return test_loss, correct / len(test_loader.dataset), -1, -1, -1, -1, -1
 
@@ -199,7 +197,7 @@ def test_model():
     ts_encoder4.load_state_dict(torch.load(base_path+'/ts_encoder4.pth', map_location='cuda:0'))
     ts_encoder5.load_state_dict(torch.load(base_path+'/ts_encoder5.pth', map_location='cuda:0'))
     classifier.load_state_dict(torch.load(base_path+'/classifier.pth', map_location='cuda:0'))
-    test(epochs, base_path) # pseudo epoch.
+    test(epochs) # pseudo epoch.
     exit(0)
 
 if __name__ == "__main__":
@@ -214,8 +212,7 @@ if __name__ == "__main__":
             # save to tsv file
             detached_train_acc, detached_train_loss = train_acc.to('cpu').detach().numpy().tolist(), train_loss.to('cpu').detach().numpy().tolist()
             detached_test_acc, detached_test_loss = test_acc.to('cpu').detach().numpy().tolist(), test_loss.to('cpu').detach().numpy().tolist()
-            detached_p1, detached_p2, detached_p3, detached_p4, detached_p5 = p1, p2, p3, p4, p5
-            update_csv_ts5(data_name, 'Concat', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, detached_p1, da2, detached_p2, da3, detached_p3, da4, detached_p4, da5, detached_p5, 1.0, now, otherparams=None)
+            update_csv_ts5(data_name, 'Concat', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, p1, da2, p2, da3, p3, da4, p4, da5, p5, 1.0, now, otherparams=None)
             
             if epoch==epochs:
                 model_save_path = './result/Concat_{}_{}-{}-{}-{}-{}_{}_{}/'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, 1.0, epoch)

@@ -26,8 +26,6 @@ parser.add_argument('--dataset', default='Crop',
                     help='UCR dataset (default: Crop)')
 parser.add_argument('--da', default='identity',
                     help='Data Augmentation (default: identity)')
-parser.add_argument('--server_id', type=int, default=0,
-                    help='when run on local, set it to 0.')
 parser.add_argument('--seed', default=1111,
                     help='random seed')
 args = parser.parse_args()
@@ -152,11 +150,6 @@ def test(epoch):
             draw_target = target_list
             draw_pred = pred_list
             draw_z = z_list[:]
-            
-        # only when using saved model
-        #feature_by_class("TSNE", data_name, draw_z, draw_target, epoch, 100*correct/len(test_loader.dataset), './', -1)
-        #save_dir = "./baselinevis_{}".format(data_name)
-        #read_save_png(draw_target, pred_list, idx_list, data_name, epoch, dataset_path, save_dir, "TEST")
 
         return test_loss, correct / len(test_loader.dataset)
 

@@ -166,7 +166,7 @@ def train(ep):
             
     return train_loss, correct/len(train_loader.dataset)
 
-def test(epoch, feature_img_path=None):
+def test(epoch):
     global now
     test_loss = 0.
     params_mean1 = params_mean2 = params_mean3 = params_mean4 = params_mean5 = 0.
@@ -245,8 +245,6 @@ def test(epoch, feature_img_path=None):
         print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
             test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset), da1, params_mean1[0], da2, params_mean2[0], da3, params_mean3[0], da4, params_mean4[0], da5, params_mean5[0]))
         
-        torch.cuda.empty_cache()
-        
         return test_loss, correct / len(test_loader.dataset), params_mean1[0], params_mean2[0], params_mean3[0], params_mean4[0], params_mean5[0]
 
 def test_model():
@@ -258,7 +256,7 @@ def test_model():
     ts_encoder5.load_state_dict(torch.load(base_path+'/ts_encoder5.pth', map_location='cuda:0'))
     gating5.load_state_dict(torch.load(base_path+'/gating5.pth', map_location='cuda:0'))
     classifier.load_state_dict(torch.load(base_path+'/classifier.pth', map_location='cuda:0'))
-    test(epochs, base_path) # pseudo epoch.
+    test(epochs) # pseudo epoch.
     exit(0)
 
 if __name__ == "__main__":
