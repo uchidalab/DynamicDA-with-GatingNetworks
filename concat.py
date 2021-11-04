@@ -12,7 +12,7 @@ import torch.nn.functional as F
 from model.dda import *
 from utils.dataload import data_generator
 from utils.draw_graphs import draw_graph, draw_hist
-from utils.write_gspread import *
+from utils.write_csv import *
 from utils.alphavis import alpha_pca
 from utils.feature_pca import feature_pca
 
@@ -25,8 +25,8 @@ parser.add_argument('--iterations', type=int, default=10000,
                     help='iteration (default: 10000)')
 parser.add_argument('--lr', type=float, default=2e-3,
                     help='initial learning rate (default: 2e-3)')
-parser.add_argument('--dataset', default='Adiac',
-                    help='UCR dataset (default: Adiac)')
+parser.add_argument('--dataset', default='Crop',
+                    help='UCR dataset (default: Crop)')
 parser.add_argument('--da1', default='identity',
                     help='Data Augmentation 1 (default: identity)')
 parser.add_argument('--da2', default='jitter',
@@ -37,16 +37,12 @@ parser.add_argument('--da4', default='magnitudeWarp',
                     help='Data Augmentation 4 (default: magnitudeWarp)')
 parser.add_argument('--da5', default='timeWarp',
                     help='Data Augmentation 5 (default: timeWarp)')
-parser.add_argument('--shareWeights', action='store_true',
-                    help='share network weights')
 parser.add_argument('--consis_lambda', type=float, default=1.0,
                     help='weights for consistency loss')
 parser.add_argument('--server_id', type=int, default=0,
                     help='when run on local, set it to 0.')
 parser.add_argument('--limit_num', type=int, default=300,
                     help='max vizualized samples')
-parser.add_argument('--sheet', default="Trial",
-                    help='google spreadsheet name')
 parser.add_argument('--seed', default=1111,
                     help='random seed')
 args = parser.parse_args()
@@ -68,9 +64,8 @@ data_name = args.dataset
 gpu_id = args.gpu_id
 limit_num = args.limit_num
 
-dataset_path = '/workdir/DataRepo{:0>2}/UCR/UCRArchive_2018'.format(args.server_id) if args.server_id!=0 else '/home/daisuke/Documents/CloudStation/lab/DataRepo/UCR/UCRArchive_2018'
-input_length, n_classes, NumOfTrain = get_length_numofclass(data_name, dataset_path)
-sheet_name = args.sheet
+dataset_path = './dataset/UCRArchive_2018'
+input_length, n_classes, NumOfTrain = get_length_numofclass(data_name)
 
 z_size = 512 # f's size
 input_channels = 1
@@ -221,25 +216,19 @@ def test(epoch, feature_img_path=None):
             draw_z5 = z5_list[:]
         
         # only when using saved model
-        feature_pca("TSNE", data_name, da1, draw_z1, -1, da2, draw_z2, -1, da3, draw_z3, -1, da4, draw_z4, -1, da5, draw_z5, -1, epoch, 100*correct/len(test_loader.dataset), './', -1)
+        #feature_pca("TSNE", data_name, da1, draw_z1, -1, da2, draw_z2, -1, da3, draw_z3, -1, da4, draw_z4, -1, da5, draw_z5, -1, epoch, 100*correct/len(test_loader.dataset), './', -1)
         
         torch.cuda.empty_cache()
         
         return test_loss, correct / len(test_loader.dataset), -1, -1, -1, -1, -1
 
 def test_model():
-    base_path = '/home/daisuke/Documents/CloudStation/lab/Codes/DDA-matsuo-based/Matsuo-5DA_{}_identity-jitter-magnitudeWarp-windowWarp-timeWarp_{}_{}'.format(data_name, args.consis_lambda, epochs)
-    #base_path = '/home/daisuke/Documents/CloudStation/lab/Codes/DDA-matsuo-based/Matsuo-5DA_FordA_identity-jitter-magnitudeWarp-windowWarp-timeWarp_1.0_356'
-    #base_path = '/home/daisuke/Documents/CloudStation/lab/Codes/DDA-matsuo-based/Matsuo-5DA_PhalangesOutlinesCorrect_identity-jitter-magnitudeWarp-windowWarp-timeWarp_1.0_712'
-    #base_path = '/home/daisuke/Documents/CloudStation/lab/Codes/DDA-matsuo-based/Matsuo-5DA_StarLightCurves_identity-jitter-magnitudeWarp-windowWarp-timeWarp_1.0_1280'
-    #base_path = '/home/daisuke/Documents/CloudStation/lab/Codes/DDA-matsuo-based/Matsuo-5DA_TwoPatterns_identity-jitter-magnitudeWarp-windowWarp-timeWarp_1.0_1280'
-    #base_path = '/home/daisuke/Documents/CloudStation/lab/Codes/DDA-matsuo-based/Matsuo-5DA_Wafer_identity-jitter-magnitudeWarp-windowWarp-timeWarp_1.0_1280'
+    base_path = './result/Concat_{}_identity-jitter-windowWarp-magnitudeWarp-timeWarp_{}_{}'.format(data_name, args.consis_lambda, epochs)
     ts_encoder1.load_state_dict(torch.load(base_path+'/ts_encoder1.pth', map_location='cuda:0'))
     ts_encoder2.load_state_dict(torch.load(base_path+'/ts_encoder2.pth', map_location='cuda:0'))
     ts_encoder3.load_state_dict(torch.load(base_path+'/ts_encoder3.pth', map_location='cuda:0'))
     ts_encoder4.load_state_dict(torch.load(base_path+'/ts_encoder4.pth', map_location='cuda:0'))
     ts_encoder5.load_state_dict(torch.load(base_path+'/ts_encoder5.pth', map_location='cuda:0'))
-    gating5.load_state_dict(torch.load(base_path+'/gating5.pth', map_location='cuda:0'))
     classifier.load_state_dict(torch.load(base_path+'/classifier.pth', map_location='cuda:0'))
     test(epochs, base_path) # pseudo epoch.
     exit(0)
@@ -257,10 +246,10 @@ if __name__ == "__main__":
             detached_train_acc, detached_train_loss = train_acc.to('cpu').detach().numpy().tolist(), train_loss.to('cpu').detach().numpy().tolist()
             detached_test_acc, detached_test_loss = test_acc.to('cpu').detach().numpy().tolist(), test_loss.to('cpu').detach().numpy().tolist()
             detached_p1, detached_p2, detached_p3, detached_p4, detached_p5 = p1, p2, p3, p4, p5
-            update_gspread_ts5(sheet_name, data_name, 'Matsuo-5DA', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, detached_p1, da2, detached_p2, da3, detached_p3, da4, detached_p4, da5, detached_p5, args.consis_lambda, now, otherparams=None)
+            update_csv_ts5(data_name, 'Concat', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, detached_p1, da2, detached_p2, da3, detached_p3, da4, detached_p4, da5, detached_p5, args.consis_lambda, now, otherparams=None)
             
             if epoch==epochs:
-                model_save_path = './data/{}_{}_{}-{}-{}-{}-{}_{}_{}/'.format(sheet_name, data_name, args.da1, args.da2, args.da3, args.da4, args.da5, args.consis_lambda, epoch)
+                model_save_path = './result/Concat_{}_{}-{}-{}-{}-{}_{}_{}/'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, args.consis_lambda, epoch)
                 if not os.path.exists(model_save_path):
                     os.makedirs(model_save_path)
                 torch.save(ts_encoder1.state_dict(), model_save_path+'ts_encoder1.pth')

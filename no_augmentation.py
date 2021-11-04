@@ -12,7 +12,7 @@ import torch.nn.functional as F
 from model.dda import *
 from utils.dataload import data_generator
 from utils.draw_graphs import draw_graph, draw_hist
-from utils.write_gspread import *
+from utils.write_csv import *
 from utils.alphavis import alpha_number_line, read_save_png
 from utils.feature_pca import feature_pca, feature_by_class
 
@@ -25,18 +25,10 @@ parser.add_argument('--iterations', type=int, default=10000,
                     help='iteration (default: 10000)')
 parser.add_argument('--lr', type=float, default=2e-3,
                     help='initial learning rate (default: 2e-3)')
-parser.add_argument('--dataset', default='Adiac',
-                    help='UCR dataset (default: Adiac)')
-parser.add_argument('--da1', default='identity',
-                    help='Data Augmentation 1 (default: identity)')
-parser.add_argument('--da2', default='jitter',
-                    help='Data Augmentation 2 (default: jitter)')
-parser.add_argument('--da3', default='windowWarp',
-                    help='Data Augmentation 3 (default: windowWarp)')
-parser.add_argument('--da4', default='magnitudeWarp',
-                    help='Data Augmentation 4 (default: magnitudeWarp)')
-parser.add_argument('--da5', default='timeWarp',
-                    help='Data Augmentation 5 (default: timeWarp)')
+parser.add_argument('--dataset', default='Crop',
+                    help='UCR dataset (default: Crop)')
+parser.add_argument('--da', default='identity',
+                    help='Data Augmentation (default: identity)')
 parser.add_argument('--shareWeights', action='store_true',
                     help='share network weights')
 parser.add_argument('--consis_lambda', type=float, default=1.0,
@@ -45,8 +37,6 @@ parser.add_argument('--server_id', type=int, default=0,
                     help='when run on local, set it to 0.')
 parser.add_argument('--limit_num', type=int, default=300,
                     help='max vizualized samples')
-parser.add_argument('--sheet', default="Trial",
-                    help='google spreadsheet name')
 parser.add_argument('--seed', default=1111,
                     help='random seed')
 args = parser.parse_args()
@@ -68,9 +58,8 @@ data_name = args.dataset
 gpu_id = args.gpu_id
 limit_num = args.limit_num
 
-dataset_path = '/workdir/DataRepo{:0>2}/UCR/UCRArchive_2018'.format(args.server_id) if args.server_id!=0 else '/home/daisuke/Documents/CloudStation/lab/DataRepo/UCR/UCRArchive_2018'
-input_length, n_classes, NumOfTrain = get_length_numofclass(data_name, dataset_path)
-sheet_name = args.sheet
+dataset_path = './dataset/UCRArchive_2018'
+input_length, n_classes, NumOfTrain = get_length_numofclass(data_name)
 
 z_size = 512 # f's size
 input_channels = 1
@@ -79,7 +68,7 @@ epochs = np.ceil(args.iterations * (batch_size / NumOfTrain)).astype(int)
 data_len_after_cnn = int((((((input_length-2)/2)-2)/2)-2)/2)
 
 steps = 0
-da1, da2, da3, da4, da5 = args.da1, 'identity', "NA", "NA", "NA" # da2 is not used.
+da1, da2, da3, da4, da5 = args.da, 'identity', "NA", "NA", "NA" # da2 is not used.
 
 print(args, 'epochs:{}'.format(epochs))
 train_loader, test_loader, _ = data_generator(data_name, batch_size, da1, da2, da3, da4, da5, dataset_path)
@@ -174,21 +163,21 @@ def test(epoch):
             draw_z = z_list[:]
             
         # only when using saved model
-        feature_by_class("TSNE", data_name, draw_z, draw_target, epoch, 100*correct/len(test_loader.dataset), './', -1)
-        save_dir = "./baselinevis_{}".format(data_name)
-        read_save_png(draw_target, pred_list, idx_list, data_name, epoch, dataset_path, save_dir, "TEST")
+        #feature_by_class("TSNE", data_name, draw_z, draw_target, epoch, 100*correct/len(test_loader.dataset), './', -1)
+        #save_dir = "./baselinevis_{}".format(data_name)
+        #read_save_png(draw_target, pred_list, idx_list, data_name, epoch, dataset_path, save_dir, "TEST")
 
         return test_loss, correct / len(test_loader.dataset)
 
 def test_model():
-    base_path = '/home/daisuke/Documents/CloudStation/lab/Codes/rightPC-running/DDA-matsuo-based/baseline_models_new/Matsuo-baseline_{}_identity-jitter-windowWarp-magnitudeWarp-timeWarp_99.0_{}'.format(data_name, epochs)
+    base_path = './result/No-Aug_{}_{}_{}'.format(data_name, args.da, epochs)
     ts_encoder1.load_state_dict(torch.load(base_path+'/ts_encoder1.pth', map_location='cuda:0'))
     classifier.load_state_dict(torch.load(base_path+'/classifier.pth', map_location='cuda:0'))
     test(epochs) # pseudo epoch.
     exit(0)
 
 if __name__ == "__main__":
-    test_model()
+    #test_model()
     best_loss, best_acc = 10e5, 0.
     for epoch in range(1, epochs+1):
         print('Epoch:{}/{}'.format(epoch, epochs))
@@ -203,10 +192,10 @@ if __name__ == "__main__":
             detached_train_loss = train_loss.to('cpu').detach().numpy().tolist()
             detached_test_acc = test_acc.to('cpu').detach().numpy().tolist()
             detached_test_loss = test_loss.to('cpu').detach().numpy().tolist()
-            update_gspread_ts1(sheet_name, data_name, 'Matsuo', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, now, otherparams=None)
+            update_csv_ts1(data_name, 'No-Aug', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, now, otherparams=None)
             
         if epoch==epochs:
-            model_save_path = './data/{}_{}_{}_{}/'.format(sheet_name, data_name, args.da1, epoch)
+            model_save_path = './result/No-Aug_{}_{}_{}/'.format(data_name, args.da, epoch)
             if not os.path.exists(model_save_path):
                 os.makedirs(model_save_path)
             torch.save(ts_encoder1.state_dict(), model_save_path+'ts_encoder1.pth')

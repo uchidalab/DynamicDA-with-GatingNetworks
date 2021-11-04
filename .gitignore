@@ -123,6 +123,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 .dmypy.json
+
+# DynamicDA
+dataset/
 dmypy.json
 
 # Pyre type checker
