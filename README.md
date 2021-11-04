@@ -18,9 +18,11 @@ Please extract this file at ```/dataset```.
 #### Models
 * No Augmentation --- refer to ```no_augmentation.py```.  
 * Concatenate --- refer to ```concat.py```.  
-* Proposed --- refer to ```proposed.py```.  
+* Proposed --- refer to ```proposed.py```. You can change lambda value in the paper by ```consis_lambda``` argument.  
 
 For execution, you just need to run ```experiment.sh```.  
+You will get csv file which save every 25 epoch's result and saved model parameters for the final epoch.  
+You can test your saved parameters by enabling ```test_model()``` under ```if __name__ == "__main__":``` in each python file above.  
 
 #### Data Augmentation methods
 Each DA method implementation is based on [Keras codes](https://github.com/uchidalab/time_series_augmentation) from [our preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841).
