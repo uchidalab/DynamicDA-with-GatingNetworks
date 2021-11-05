@@ -37,7 +37,7 @@ D. Oba, S. Matsuo and B. K. Iwana, "Dynamic Data Augmentation with Gating Networ
 ```
 @article{oba2021,
   title={Dynamic Data Augmentation with Gating Networks},
-  author={Daisuke Oba, Shinnosuke Matsuo and Iwana Brian Kenji},
+  author={Daisuke Oba, Shinnosuke Matsuo and Brian Kenji Iwana},
   journal={arXiv preprint arXiv:????.?????},
   year={2021}
 }
