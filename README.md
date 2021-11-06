@@ -10,8 +10,8 @@ This is an official PyTorch implementation of the paper *Dynamic Data Augmentati
 
 #### Dataset
 In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~eamonn/time_series_data_2018/).  
-You can download our modified UCR dataset from [here](https://drive.google.com/file/d/1w1--ckigeF-PPzbwa7_6ghJdPqo7P3_P/view?usp=sharing).  
-Please extract this file at ```/dataset```.  
+Please be cautious that we modified these datasets as mentioned in the paper.  
+Please put on datasets folder under ```/dataset```.  
 
 ### Guidance
 
