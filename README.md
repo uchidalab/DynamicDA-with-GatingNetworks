@@ -11,9 +11,9 @@ This is an official PyTorch implementation of the paper *Dynamic Data Augmentati
 #### Dataset
 In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~eamonn/time_series_data_2018/).  
 Please be cautious that we modified these datasets as mentioned in the paper.  
-Please put on datasets folder under ```/dataset```.  
+Put on datasets folder under ```/dataset```.  
 
-### Guidance
+### Components
 
 #### Models
 * No Augmentation --- refer to ```no_augmentation.py```.  
@@ -25,7 +25,7 @@ You will get csv file which save every 25 epoch's result and saved model paramet
 You can test your saved parameters by enabling ```test_model()``` under ```if __name__ == "__main__":``` in each python file above.  
 
 #### Data Augmentation methods
-Each DA method implementation is based on [Keras codes](https://github.com/uchidalab/time_series_augmentation) from [our preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841).
+Each DA method implementation is based on [our preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841).
 * Identity --- the original time series with no augmentation.  
 * Jittering --- adds Gaussian noise to the time series.  
 * Magnitude Warping --- multiply the time series by a smooth curve defined by cublic spline.  
