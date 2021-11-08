@@ -35,10 +35,10 @@ Each DA method implementation is based on [our preceeding journal](https://journ
 ## Citation
 D. Oba, S. Matsuo and B. K. Iwana, "Dynamic Data Augmentation with Gating Networks," arXiv, 2021.  
 ```
-@article{oba2021,
+@article{oba2021dynamic,
   title={Dynamic Data Augmentation with Gating Networks},
   author={Daisuke Oba, Shinnosuke Matsuo and Brian Kenji Iwana},
-  journal={arXiv preprint arXiv:????.?????},
+  journal={arXiv preprint arXiv:2111.03253},
   year={2021}
 }
 ```
