@@ -168,8 +168,6 @@ if __name__ == "__main__":
         train_loss, train_acc = train(epoch)
         if epoch%25==0 or epoch==epochs or epoch==1:
             test_loss, test_acc = test(epoch)
-        #else:
-            #test_loss, test_acc = test(epoch)
         
             # save to tsv file
             detached_train_acc = train_acc.to('cpu').detach().numpy().tolist()
