@@ -16,8 +16,6 @@ from utils.write_csv import *
 parser = argparse.ArgumentParser(description='Sequence Modeling')
 parser.add_argument('--batch_size', type=int, default=256, metavar='N',
                     help='batch size (default: 256)')
-parser.add_argument('--gpu_id', type=int, default=0,
-                    help='set gpu_id for server')
 parser.add_argument('--iterations', type=int, default=10000,
                     help='iteration (default: 10000)')
 parser.add_argument('--lr', type=float, default=2e-3,
@@ -34,6 +32,8 @@ parser.add_argument('--da4', default='magnitudeWarp',
                     help='Data Augmentation 4 (default: magnitudeWarp)')
 parser.add_argument('--da5', default='timeWarp',
                     help='Data Augmentation 5 (default: timeWarp)')
+parser.add_argument('--gpu_id', type=int, default=0,
+                    help='set gpu_id')
 parser.add_argument('--seed', default=1111,
                     help='random seed')
 args = parser.parse_args()
@@ -53,7 +53,6 @@ now = "{:0=2}".format(dt.month) + "{:0=2}-".format(dt.day) + "{:0=2}".format(dt.
 batch_size = args.batch_size
 data_name = args.dataset
 gpu_id = args.gpu_id
-limit_num = args.limit_num
 
 dataset_path = './dataset/UCRArchive_2018'
 input_length, n_classes, NumOfTrain = get_length_numofclass(data_name)
@@ -68,7 +67,7 @@ steps = 0
 da1, da2, da3, da4, da5 = args.da1, args.da2, args.da3, args.da4, args.da5
 
 print(args, 'epochs:{}'.format(epochs))
-train_loader, test_loader, _ = data_generator(data_name, batch_size, da1, da2, da3, da4, da5, dataset_path)
+train_loader, test_loader = data_generator(data_name, batch_size, da1, da2, da3, da4, da5, dataset_path)
 
 ts_encoder1, ts_encoder2 = TSEncoder(data_len_after_cnn, z_size), TSEncoder(data_len_after_cnn, z_size)
 ts_encoder3, ts_encoder4 = TSEncoder(data_len_after_cnn, z_size), TSEncoder(data_len_after_cnn, z_size)
@@ -131,7 +130,7 @@ def train(ep):
     
     train_loss /= len(train_loader.dataset)
     #print('     Train set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%)'.format(
-    #    train_loss, correct, len(train_loader.dataset), 100. * correct / len(train_loader.dataset)))
+    #    train_loss, correct, len(train_loader.dataset), 100.*correct / len(train_loader.dataset)))
             
     return train_loss, correct/len(train_loader.dataset)
 
@@ -185,7 +184,7 @@ def test(epoch):
         pred_list = np.array([item for l in pred_list for item in l ])
         test_loss /= len(test_loader.dataset)
         print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%)'.format(
-            test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset)))
+            test_loss, correct, len(test_loader.dataset), 100.*correct / len(test_loader.dataset)))
         
         return test_loss, correct / len(test_loader.dataset), -1, -1, -1, -1, -1
 
@@ -197,7 +196,7 @@ def test_model():
     ts_encoder4.load_state_dict(torch.load(base_path+'/ts_encoder4.pth', map_location='cuda:0'))
     ts_encoder5.load_state_dict(torch.load(base_path+'/ts_encoder5.pth', map_location='cuda:0'))
     classifier.load_state_dict(torch.load(base_path+'/classifier.pth', map_location='cuda:0'))
-    test(epochs) # pseudo epoch.
+    test(epochs)
     exit(0)
 
 if __name__ == "__main__":
@@ -209,10 +208,10 @@ if __name__ == "__main__":
         if epoch%25==0 or epoch==epochs or epoch==1:
             test_loss, test_acc, p1, p2, p3, p4, p5 = test(epoch)
         
-            # save to tsv file
+            # save to csv file
             detached_train_acc, detached_train_loss = train_acc.to('cpu').detach().numpy().tolist(), train_loss.to('cpu').detach().numpy().tolist()
             detached_test_acc, detached_test_loss = test_acc.to('cpu').detach().numpy().tolist(), test_loss.to('cpu').detach().numpy().tolist()
-            update_csv_ts5(data_name, 'Concat', '{}/{}'.format(dataset_path, data_name), detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, epochs, da1, p1, da2, p2, da3, p3, da4, p4, da5, p5, 1.0, now, otherparams=None)
+            update_csv_ts5(data_name, 'Concat', detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, da1, p1, da2, p2, da3, p3, da4, p4, da5, p5, -1.0, now)
             
             if epoch==epochs:
                 model_save_path = './result/Concat_{}_{}-{}-{}-{}-{}_{}_{}/'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, 1.0, epoch)

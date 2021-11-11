@@ -2,9 +2,9 @@ da=(FordA NonInvasiveFetalECGThorax1 FordB NonInvasiveFetalECGThorax2 Wafer Hand
 
 for idx in ${!da[@]}
 do
-    python3 no_augmentation.py --dataset ${da[idx]} --iterations 20000 --da 'identity' --batch_size 64 --lr 0.0001
-    python3 concat.py --dataset ${da[idx]} --iterations 20000 --batch_size 64 --lr 0.0001
-    python3 proposed.py --dataset ${da[idx]} --iterations 20000 --batch_size 64 --lr 0.0001 --consis_lambda 1.0
+    python3 no_augmentation.py --batch_size 64 --iterations 20000 --lr 0.0001 --dataset ${da[idx]} --da 'identity'
+    python3 concat.py --batch_size 64 --iterations 20000 --lr 0.0001 --dataset ${da[idx]} 
+    python3 proposed.py --batch_size 64 --iterations 20000 --lr 0.0001 --dataset ${da[idx]} --consis_lambda 1.0
 done
 
 

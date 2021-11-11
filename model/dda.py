@@ -6,16 +6,8 @@ import torch.nn.functional as F
 from typing import Union, List, Dict, Any, cast
 from torchinfo import summary
 
-batch_size = 256
-data_ch = 1
-data_len = 1008
-z_size = 512
-n_classes = 7
-
-data_len_after_cnn = int((((((data_len-2)/2)-2)/2)-2)/2)
-
 class TSEncoder(nn.Module): # CNN + MLP, Time Series Encoder
-    # initializers
+    
     def __init__(self, data_len_after_cnn, d=32):
         super().__init__()
         self.data_len_after_cnn = data_len_after_cnn
@@ -34,7 +26,6 @@ class TSEncoder(nn.Module): # CNN + MLP, Time Series Encoder
         self.relu = nn.ReLU()
         self.maxpooling = nn.MaxPool1d(2, 2)
 
-    # forward method
     def forward(self, x):
         x = self.maxpooling(self.relu(self.bn1(self.conv1(x))))
         x = self.maxpooling(self.relu(self.bn2(self.conv2(x))))
@@ -46,13 +37,8 @@ class TSEncoder(nn.Module): # CNN + MLP, Time Series Encoder
 
         return x
 
-#data = torch.ones((batch_size, data_ch, data_len))
-#ts_encoder = TSEncoder(data_len_after_cnn)
-#print(ts_encoder(data).size())
-#summary(ts_encoder, (batch_size,data_ch,data_len))
-
 class Classifier(nn.Module): # MLP
-    # initializers
+    
     def __init__(self, num_of_class, d=32):
         super().__init__()
         self.num_of_class = num_of_class
@@ -62,20 +48,14 @@ class Classifier(nn.Module): # MLP
 
         self.relu = nn.ReLU()
 
-    # forward method
     def forward(self, x):
         x = self.relu(self.linear_bn1(self.linear1(x)))
         x = self.linear2(x)
 
         return x
 
-#z = torch.ones((batch_size, z_size))
-#classifier = Classifier(n_classes, z_size)
-#print(classifier(z).size())
-#summary(classifier, (batch_size,z_size))
-
 class Gating5(nn.Module): # CNN + MLP
-    # initializers
+    
     def __init__(self, data_len_after_cnn, d=32):
         super().__init__()
         self.data_len_after_cnn = data_len_after_cnn
@@ -96,7 +76,6 @@ class Gating5(nn.Module): # CNN + MLP
         self.maxpooling = nn.MaxPool1d(2, 2)
         self.softmax = nn.Softmax(dim=1)
 
-    # forward method
     def forward(self, x):
         x = self.maxpooling(self.relu(self.bn1(self.conv1(x))))
         x = self.maxpooling(self.relu(self.bn2(self.conv2(x))))
@@ -105,11 +84,39 @@ class Gating5(nn.Module): # CNN + MLP
 
         x = self.relu(self.linear_bn1(self.linear1(x)))
         x = self.relu(self.linear_bn2(self.linear2(x)))
-        x = self.softmax(self.linear3(x)) # sum will be 1.0
+        x = self.softmax(self.linear3(x))
         
         return x.view(-1,5)
 
-#data = torch.ones((batch_size, data_ch*5, data_len))
-#gating5 = Gating5(data_len_after_cnn)
-#print(gating5(data).size())
-#summary(gating5, (batch_size,data_ch*5,data_len))
+if __name__ == "__main__":
+	batch_size = 256
+	data_ch = 1
+	data_len = 1008
+	z_size = 512
+	n_classes = 7
+	
+	data_len_after_cnn = int((((((data_len-2)/2)-2)/2)-2)/2)
+	
+	# TSEncoder
+	print('### TSEncoder')
+	data = torch.ones((batch_size, data_ch, data_len))
+	ts_encoder = TSEncoder(data_len_after_cnn)
+	print(ts_encoder(data).size())
+	summary(ts_encoder, (batch_size,data_ch,data_len))
+	print()
+	
+	# Classifier
+	print('### Classifier')
+	z = torch.ones((batch_size, z_size))
+	classifier = Classifier(n_classes, z_size)
+	print(classifier(z).size())
+	summary(classifier, (batch_size,z_size))
+	print()
+	
+	# Gating5
+	print('### Gating5')
+	data = torch.ones((batch_size, data_ch*5, data_len))
+	gating5 = Gating5(data_len_after_cnn)
+	print(gating5(data).size())
+	summary(gating5, (batch_size,data_ch*5,data_len))
+	
