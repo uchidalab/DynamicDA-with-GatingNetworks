@@ -12,6 +12,7 @@ This is an official PyTorch implementation of the paper *Dynamic Data Augmentati
 In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~eamonn/time_series_data_2018/).  
 Please be cautious that we modified these datasets as mentioned in the paper.  
 Put on datasets folder under ```/dataset```.  
+Plus, please set the dataset paths in ```data_generator``` in ```/utils/dataload.py```   
 
 ### Components
 
