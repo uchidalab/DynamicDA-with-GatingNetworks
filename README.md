@@ -11,8 +11,8 @@ This is an official PyTorch implementation of the paper *Dynamic Data Augmentati
 #### Dataset
 In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~eamonn/time_series_data_2018/).  
 Please be cautious that we modified these datasets as mentioned in the paper.  
-Put on datasets folder under ```/dataset```.  
-Plus, please set the dataset paths in ```data_generator``` in ```/utils/dataload.py```   
+Put dataset folders on ```/dataset```.  
+Plus, set the dataset paths in a function ```data_generator``` in the script ```/utils/dataload.py```   
 
 ### Components
 
@@ -21,7 +21,7 @@ Plus, please set the dataset paths in ```data_generator``` in ```/utils/dataload
 * Concatenate --- refer to ```concat.py```.  
 * Proposed --- refer to ```proposed.py```. You can change lambda value in the paper by ```consis_lambda``` argument.  
 
-For execution, you just need to run ```experiment.sh```.  
+For execution, run ```experiment.sh```.  
 You will get csv file which save every 25 epoch's result and saved model parameters for the final epoch.  
 You can test your saved parameters by enabling ```test_model()``` under ```if __name__ == "__main__":``` in each python file above.  
 
