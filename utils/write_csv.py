@@ -72,5 +72,36 @@ def get_length_numofclass(dataset_name):
 		length, NumOfClass, NumOfTrain = 128, 4, 1000
 	elif dataset_name == 'Wafer':
 		length, NumOfClass, NumOfTrain = 152, 2, 1000
+    # 1000-500 samples
+	elif dataset_name == 'UWaveGestureLibraryAll':
+		length, NumOfClass, NumOfTrain = 945, 8, 896
+	elif dataset_name == 'UWaveGestureLibraryX':
+		length, NumOfClass, NumOfTrain = 315, 8, 896
+	elif dataset_name == 'UWaveGestureLibraryY':
+		length, NumOfClass, NumOfTrain = 315, 8, 896
+	elif dataset_name == 'UWaveGestureLibraryZ':
+		length, NumOfClass, NumOfTrain = 315, 8, 896
+	elif dataset_name == 'Strawberry':
+		length, NumOfClass, NumOfTrain = 235, 2, 613
+	elif dataset_name == 'ProximalPhalanxOutlineCorrect':
+		length, NumOfClass, NumOfTrain = 80, 2, 600
+	elif dataset_name == 'MiddlePhalanxOutlineCorrect':
+		length, NumOfClass, NumOfTrain = 80, 2, 600
+	elif dataset_name == 'DistalPhalanxOutlineCorrect':
+		length, NumOfClass, NumOfTrain = 80, 2, 600
+	elif dataset_name == 'ShapesAll':
+		length, NumOfClass, NumOfTrain = 512, 60, 600
+	elif dataset_name == 'FaceAll':
+		length, NumOfClass, NumOfTrain = 131, 14, 560
+	elif dataset_name == 'PLAID_adjusted':
+		length, NumOfClass, NumOfTrain = 1344, 11, 537
+	elif dataset_name == 'EthanolLevel':
+		length, NumOfClass, NumOfTrain = 1751, 4, 504
+	elif dataset_name == 'SwedishLeaf':
+		length, NumOfClass, NumOfTrain = 128, 15, 500
+	elif dataset_name == 'ECG5000':
+		length, NumOfClass, NumOfTrain = 140, 5, 500
+	elif dataset_name == 'MixedShapesRegularTrain':
+		length, NumOfClass, NumOfTrain = 1024, 5, 500
 	
 	return length, NumOfClass, NumOfTrain
