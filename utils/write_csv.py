@@ -51,7 +51,7 @@ def get_length_numofclass(dataset_name):
 	if dataset_name == 'Crop':
 		length, NumOfClass, NumOfTrain = 46, 24, 7200
 	elif dataset_name == 'ElectricDevices':
-		length, NumOfClass, NumOfTrain = 95, 7, 8926
+		length, NumOfClass, NumOfTrain = 96, 7, 8926
 	elif dataset_name == 'FordA':
 		length, NumOfClass, NumOfTrain = 500, 2, 3601
 	elif dataset_name == 'FordB':
