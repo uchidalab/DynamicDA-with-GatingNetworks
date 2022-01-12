@@ -25,7 +25,10 @@ class UCR(torch.utils.data.Dataset):
     
     def __getitem__(self, idx):
         datas = self.col_floats[idx]
-        label = int(datas[0]-1) # must be 0 to num_of_class-1. In tsv, class must be in range 1 to num_of_class.
+        if 'PLAID' in self.datapath:
+            label = int(datas[0]) # PLAID
+        else:
+            label = int(datas[0]-1) # must be 0 to num_of_class-1. In tsv, class must be in range 1 to num_of_class.
         data = [float(datas[i+1]/1.0) for i in range(len(datas[1:]))]
         
         # Data Augmentation
