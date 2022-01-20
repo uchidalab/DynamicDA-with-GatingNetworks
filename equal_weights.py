@@ -32,6 +32,8 @@ parser.add_argument('--da4', default='magnitudeWarp',
                     help='Data Augmentation 4 (default: magnitudeWarp)')
 parser.add_argument('--da5', default='timeWarp',
                     help='Data Augmentation 5 (default: timeWarp)')
+parser.add_argument('--consis_lambda', type=float, default=1.0,
+                    help='weights for consistency loss')
 parser.add_argument('--gpu_id', type=int, default=0,
                     help='set gpu_id')
 parser.add_argument('--seed', type=int, default=1111,
@@ -72,7 +74,7 @@ train_loader, test_loader = data_generator(data_name, batch_size, da1, da2, da3,
 ts_encoder1, ts_encoder2 = TSEncoder(data_len_after_cnn, z_size), TSEncoder(data_len_after_cnn, z_size)
 ts_encoder3, ts_encoder4 = TSEncoder(data_len_after_cnn, z_size), TSEncoder(data_len_after_cnn, z_size)
 ts_encoder5 = TSEncoder(data_len_after_cnn, z_size)
-classifier = Classifier(n_classes, z_size*5) # for concat
+classifier = Classifier(n_classes, z_size)
 
 ts_encoder1.cuda(gpu_id)
 ts_encoder2.cuda(gpu_id)
@@ -115,9 +117,10 @@ def train(ep):
         da3_data, da4_data, da5_data = Variable(da3_data), Variable(da4_data), Variable(da5_data)
         
         z1, z2, z3, z4, z5 = ts_encoder1(da1_data), ts_encoder2(da2_data), ts_encoder3(da3_data), ts_encoder4(da4_data), ts_encoder5(da5_data)
-        z = torch.cat((z1,z2,z3,z4,z5), 1)
-        y = classifier(z)
         
+        z = z1 + z2 + z3 + z4 + z5
+        
+        y = classifier(z)
         loss = CE_loss(y, target)
         
         optimizer.zero_grad()
@@ -129,8 +132,8 @@ def train(ep):
         train_loss += loss
     
     train_loss /= len(train_loader.dataset)
-    #print('     Train set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%)'.format(
-    #    train_loss, correct, len(train_loader.dataset), 100.*correct / len(train_loader.dataset)))
+    #print('     Train set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
+    #    train_loss, correct, len(train_loader.dataset), 100.*correct / len(train_loader.dataset), da1, params_mean1[0], da2, params_mean2[0], da3, params_mean3[0], da4, params_mean4[0], da5, params_mean5[0]))
             
     return train_loss, correct/len(train_loader.dataset)
 
@@ -159,15 +162,9 @@ def test(epoch):
             
             z1, z2, z3, z4, z5 = ts_encoder1(da1_data), ts_encoder2(da2_data), ts_encoder3(da3_data), ts_encoder4(da4_data), ts_encoder5(da5_data)
             
-            z1_list = z1 if not 'z1_list' in locals() else torch.cat([z1_list, z1])
-            z2_list = z2 if not 'z2_list' in locals() else torch.cat([z2_list, z2])
-            z3_list = z3 if not 'z3_list' in locals() else torch.cat([z3_list, z3])
-            z4_list = z4 if not 'z4_list' in locals() else torch.cat([z4_list, z4])
-            z5_list = z5 if not 'z5_list' in locals() else torch.cat([z5_list, z5])
-            
             target_list = target.to('cpu').detach().numpy() if not 'target_list' in locals() else np.concatenate([target_list, target.to('cpu').detach().numpy()])            
 
-            z = torch.cat((z1,z2,z3,z4,z5), 1)
+            z = z1 + z2 + z3 + z4 + z5
             y = classifier(z)
             
             _, predict = torch.max(y.data, 1)
@@ -186,10 +183,10 @@ def test(epoch):
         print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%)'.format(
             test_loss, correct, len(test_loader.dataset), 100.*correct / len(test_loader.dataset)))
         
-        return test_loss, correct / len(test_loader.dataset), -1, -1, -1, -1, -1
+        return test_loss, correct / len(test_loader.dataset)
 
 def test_model():
-    base_path = './result/Concat_{}_{}-{}-{}-{}-{}_1.0_{}'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, epochs)
+    base_path = './result/Equal-Weights_{}_{}-{}-{}-{}-{}_{}_{}'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, args.consis_lambda, epochs)
     ts_encoder1.load_state_dict(torch.load(base_path+'/ts_encoder1.pth', map_location='cuda:0'))
     ts_encoder2.load_state_dict(torch.load(base_path+'/ts_encoder2.pth', map_location='cuda:0'))
     ts_encoder3.load_state_dict(torch.load(base_path+'/ts_encoder3.pth', map_location='cuda:0'))
@@ -206,15 +203,16 @@ if __name__ == "__main__":
         print('Epoch:{}/{}'.format(epoch, epochs))
         train_loss, train_acc = train(epoch)
         if epoch%25==0 or epoch==epochs or epoch==1:
-            test_loss, test_acc, p1, p2, p3, p4, p5 = test(epoch)
+            test_loss, test_acc = test(epoch)
         
             # save to csv file
             detached_train_acc, detached_train_loss = train_acc.to('cpu').detach().numpy().tolist(), train_loss.to('cpu').detach().numpy().tolist()
             detached_test_acc, detached_test_loss = test_acc.to('cpu').detach().numpy().tolist(), test_loss.to('cpu').detach().numpy().tolist()
-            update_csv_ts5(data_name, 'Concat', detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, da1, p1, da2, p2, da3, p3, da4, p4, da5, p5, -1.0, now)
+            update_csv_ts5(data_name, 'Equal-Weights', detached_train_acc, detached_train_loss, detached_test_acc, detached_test_loss, epoch, \
+                           da1, -1, da2, -1, da3, -1, da4, -1, da5, -1, -1, now)
             
             if epoch==epochs:
-                model_save_path = './result/Concat_{}_{}-{}-{}-{}-{}_{}_{}/'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, 1.0, epoch)
+                model_save_path = './result/Equal-Weights_{}_{}-{}-{}-{}-{}_{}_{}/'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, args.consis_lambda, epoch)
                 if not os.path.exists(model_save_path):
                     os.makedirs(model_save_path)
                 torch.save(ts_encoder1.state_dict(), model_save_path+'ts_encoder1.pth')

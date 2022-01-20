@@ -79,18 +79,18 @@ def test_model(epoch):
     global now
     test_loss = 0.
     correct = 0
-    base_path = './ensemble'
+    base_path = './result'
     
-    ts_encoder1.load_state_dict(torch.load(base_path+'/{}_{}_{}/ts_encoder1.pth'.format(data_name, da1, epoch), map_location='cuda:0'))
-    classifier1.load_state_dict(torch.load(base_path+'/{}_{}_{}/classifier.pth'.format(data_name, da1, epoch), map_location='cuda:0'))
-    ts_encoder2.load_state_dict(torch.load(base_path+'/{}_{}_{}/ts_encoder1.pth'.format(data_name, da2, epoch), map_location='cuda:0'))
-    classifier2.load_state_dict(torch.load(base_path+'/{}_{}_{}/classifier.pth'.format(data_name, da2, epoch), map_location='cuda:0'))
-    ts_encoder3.load_state_dict(torch.load(base_path+'/{}_{}_{}/ts_encoder1.pth'.format(data_name, da3, epoch), map_location='cuda:0'))
-    classifier3.load_state_dict(torch.load(base_path+'/{}_{}_{}/classifier.pth'.format(data_name, da3, epoch), map_location='cuda:0'))
-    ts_encoder4.load_state_dict(torch.load(base_path+'/{}_{}_{}/ts_encoder1.pth'.format(data_name, da4, epoch), map_location='cuda:0'))
-    classifier4.load_state_dict(torch.load(base_path+'/{}_{}_{}/classifier.pth'.format(data_name, da4, epoch), map_location='cuda:0'))
-    ts_encoder5.load_state_dict(torch.load(base_path+'/{}_{}_{}/ts_encoder1.pth'.format(data_name, da5, epoch), map_location='cuda:0'))
-    classifier5.load_state_dict(torch.load(base_path+'/{}_{}_{}/classifier.pth'.format(data_name, da5, epoch), map_location='cuda:0'))
+    ts_encoder1.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/ts_encoder1.pth'.format(data_name, da1, epoch), map_location='cuda:0'))
+    classifier1.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/classifier.pth'.format(data_name, da1, epoch), map_location='cuda:0'))
+    ts_encoder2.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/ts_encoder1.pth'.format(data_name, da2, epoch), map_location='cuda:0'))
+    classifier2.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/classifier.pth'.format(data_name, da2, epoch), map_location='cuda:0'))
+    ts_encoder3.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/ts_encoder1.pth'.format(data_name, da3, epoch), map_location='cuda:0'))
+    classifier3.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/classifier.pth'.format(data_name, da3, epoch), map_location='cuda:0'))
+    ts_encoder4.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/ts_encoder1.pth'.format(data_name, da4, epoch), map_location='cuda:0'))
+    classifier4.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/classifier.pth'.format(data_name, da4, epoch), map_location='cuda:0'))
+    ts_encoder5.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/ts_encoder1.pth'.format(data_name, da5, epoch), map_location='cuda:0'))
+    classifier5.load_state_dict(torch.load(base_path+'/No-Aug_{}_{}_{}/classifier.pth'.format(data_name, da5, epoch), map_location='cuda:0'))
     
     ts_encoder1.eval()
     classifier1.eval()
@@ -134,7 +134,7 @@ def test_model(epoch):
         pred_list = np.array([item for l in pred_list for item in l ])
         test_loss /= len(test_loader.dataset)
         test_acc = correct / len(test_loader.dataset)
-        print(' Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%)'.format(
+        print(' Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%)'.format(
             test_loss, correct, len(test_loader.dataset), 100.*test_acc))
         
 

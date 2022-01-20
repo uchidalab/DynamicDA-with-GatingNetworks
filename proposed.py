@@ -36,7 +36,7 @@ parser.add_argument('--consis_lambda', type=float, default=1.0,
                     help='weights for consistency loss')
 parser.add_argument('--gpu_id', type=int, default=0,
                     help='set gpu_id')
-parser.add_argument('--seed', default=1111,
+parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 args = parser.parse_args()
 
@@ -160,7 +160,7 @@ def train(ep):
     params_mean3 /= len(train_loader.dataset)
     params_mean4 /= len(train_loader.dataset)
     params_mean5 /= len(train_loader.dataset)
-    #print('     Train set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
+    #print('     Train set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
     #    train_loss, correct, len(train_loader.dataset), 100.*correct / len(train_loader.dataset), da1, params_mean1[0], da2, params_mean2[0], da3, params_mean3[0], da4, params_mean4[0], da5, params_mean5[0]))
             
     return train_loss, correct/len(train_loader.dataset)
@@ -241,7 +241,7 @@ def test(epoch):
         params_mean3 /= len(test_loader.dataset)
         params_mean4 /= len(test_loader.dataset)
         params_mean5 /= len(test_loader.dataset)
-        print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
+        print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
             test_loss, correct, len(test_loader.dataset), 100.*correct / len(test_loader.dataset), da1, params_mean1[0], da2, params_mean2[0], da3, params_mean3[0], da4, params_mean4[0], da5, params_mean5[0]))
         
         return test_loss, correct / len(test_loader.dataset), params_mean1[0], params_mean2[0], params_mean3[0], params_mean4[0], params_mean5[0]

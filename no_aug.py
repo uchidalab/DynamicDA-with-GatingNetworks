@@ -26,7 +26,7 @@ parser.add_argument('--da', default='identity',
                     help='Data Augmentation (default: identity)')
 parser.add_argument('--gpu_id', type=int, default=0,
                     help='set gpu_id')
-parser.add_argument('--seed', default=1111,
+parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 args = parser.parse_args()
 
@@ -99,7 +99,7 @@ def train(ep):
         
         train_loss += loss
     train_loss /= len(train_loader.dataset)
-    #print('Train set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%) Average Params: {}|{:.4f}, {}|{:.4f}'.format(
+    #print('Train set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%) Average Params: {}|{:.4f}, {}|{:.4f}'.format(
     #    train_loss, correct, len(train_loader.dataset), 100.*correct / len(train_loader.dataset), da1, params_mean, da2, 1-params_mean))
             
     return train_loss, correct/len(train_loader.dataset)
@@ -135,7 +135,7 @@ def test(epoch):
 
         pred_list = np.array([item for l in pred_list for item in l ])
         test_loss /= len(test_loader.dataset)
-        print(' Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.0f}%)'.format(
+        print(' Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%)'.format(
             test_loss, correct, len(test_loader.dataset), 100.*correct / len(test_loader.dataset)))
 
         return test_loss, correct / len(test_loader.dataset)
