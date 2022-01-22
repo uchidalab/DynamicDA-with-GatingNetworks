@@ -1,5 +1,5 @@
 # Dynamic Data Augmentation with Gating Networks
-This is an official PyTorch implementation of the paper *Dynamic Data Augmentation with Gating Networks* which is submitted to **ICASSP2022** (under reviewing).  
+This is an official PyTorch implementation of the paper *Dynamic Data Augmentation with Gating Networks* which is submitted to **ICPR2022** (under review).  
 
 ## Usage
 
