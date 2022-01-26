@@ -24,8 +24,8 @@ Plus, set the dataset path in a function named ```data_generator``` in the scrip
 * Concatenate --- refer to ```concat.py```.  -->  
 
 For execution, run ```experiment.sh```.  
-You will get csv file which save every 25 epoch's result and saved model parameters for the final epoch.  
-You can test your saved parameters by enabling ```test_model()``` under ```if __name__ == "__main__":``` in each python file above.  
+You will get a csv file that contains every 25 epoch's result and a frozen model at the final epoch.  
+You can test the frozen model by uncommenting ```#test_model()``` under ```if __name__ == "__main__":``` in each python file above.  
 
 #### Data Augmentation methods
 Each DA method implementation is based on [our preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841).
