@@ -18,10 +18,10 @@ Plus, set the dataset paths in a function ```data_generator``` in the script ```
 
 #### Models
 * No Augmentation --- refer to ```no_augmentation.py```.  
-* Concatenate --- refer to ```concat.py```.  
 * Proposed --- refer to ```proposed.py```. You can change lambda value in the paper by ```consis_lambda``` argument.  
-* Ensemble -- refer to ```ensemble.py```.  
-* Feature Combination with Equal Weights -- refer to ```equal_weights.py```.  This is listed as "w/o GateNet & consistency loss" on the table.  
+* Feature Combination with Equal Weights -- refer to ```equal_weights.py```.  This is listed as "w/o GateNet & feature consistency loss" on the table.  
+<!--* Ensemble -- refer to ```ensemble.py```.
+* Concatenate --- refer to ```concat.py```.  -->  
 
 For execution, run ```experiment.sh```.  
 You will get csv file which save every 25 epoch's result and saved model parameters for the final epoch.  
