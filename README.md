@@ -29,7 +29,7 @@ You can test your saved parameters by enabling ```test_model()``` under ```if __
 
 #### Data Augmentation methods
 Each DA method implementation is based on [our preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841).
-Please take a look on ```/utils/augmentation.py``` for these codes.  
+Please take a look on ```/utils/augmentation.py``` for the codes. Adopted methods are the following:  
 * Identity --- the original time series with no augmentation.  
 * Jittering --- adds Gaussian noise to the time series.  
 * Magnitude Warping --- multiply the time series by a smooth curve defined by cublic spline.  
