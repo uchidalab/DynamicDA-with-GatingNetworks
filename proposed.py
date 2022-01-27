@@ -12,6 +12,7 @@ import torch.nn.functional as F
 from model.dda import *
 from utils.dataload import data_generator
 from utils.write_csv import *
+from utils.visualize import *
 
 parser = argparse.ArgumentParser(description='Sequence Modeling')
 parser.add_argument('--batch_size', type=int, default=256, metavar='N',
@@ -38,6 +39,8 @@ parser.add_argument('--gpu_id', type=int, default=0,
                     help='set gpu_id')
 parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
+parser.add_argument('--limit_num', type=int, default=300,
+                    help='max vizualized samples')
 args = parser.parse_args()
 
 # fix random
@@ -55,6 +58,7 @@ now = "{:0=2}".format(dt.month) + "{:0=2}-".format(dt.day) + "{:0=2}".format(dt.
 batch_size = args.batch_size
 data_name = args.dataset
 gpu_id = args.gpu_id
+limit_num = args.limit_num
 
 dataset_path = './dataset/UCRArchive_2018'
 input_length, n_classes, NumOfTrain = get_length_numofclass(data_name)
@@ -165,7 +169,7 @@ def train(ep):
             
     return train_loss, correct/len(train_loader.dataset)
 
-def test(epoch):
+def test(epoch, test_model=False):
     global now
     test_loss = 0.
     params_mean1 = params_mean2 = params_mean3 = params_mean4 = params_mean5 = 0.
@@ -241,13 +245,33 @@ def test(epoch):
         params_mean3 /= len(test_loader.dataset)
         params_mean4 /= len(test_loader.dataset)
         params_mean5 /= len(test_loader.dataset)
+        
+        # only when using saved model
+        if test_model == True:
+            random.seed(42) # must
+            idx_list = np.arange(len(target_list))
+            if len(target_list)>limit_num:
+                idx_list = random.sample(list(idx_list), limit_num)
+                draw_p1, draw_p2, draw_p3, draw_p4, draw_z = itemgetter(idx_list)(params_list1[:]), itemgetter(idx_list)(params_list2[:]), itemgetter(idx_list)(params_list3[:]), itemgetter(idx_list)(params_list4[:]), itemgetter(idx_list)(z_list[:])
+                draw_p5, draw_target, draw_pred, draw_z1 = itemgetter(idx_list)(params_list5[:]), itemgetter(idx_list)(target_list), itemgetter(idx_list)(pred_list), itemgetter(idx_list)(z1_list[:])
+                draw_z2, draw_z3, draw_z4, draw_z5 = itemgetter(idx_list)(z2_list[:]), itemgetter(idx_list)(z3_list[:]), itemgetter(idx_list)(z4_list[:]), itemgetter(idx_list)(z5_list[:])
+            else:
+                draw_p1, draw_p2, draw_p3, draw_p4 = params_list1[:], params_list2[:], params_list3[:], params_list4[:]
+                draw_p5, draw_target, draw_pred, draw_z = params_list5[:], target_list, pred_list, z_list[:]
+                draw_z1, draw_z2, draw_z3, draw_z4, draw_z5 = z1_list[:], z2_list[:], z3_list[:], z4_list[:], z5_list[:]
+        
+            read_save_png(draw_target, draw_pred, idx_list, data_name, epoch, dataset_path, "./{}/Sample_visualize_{}".format(data_name, data_name), "TEST", draw_p1, draw_p2, draw_p3, draw_p4, draw_p5)
+            feature_by_class("TSNE", data_name, draw_z, draw_target, epoch, 100*correct/len(test_loader.dataset), "./{}".format(data_name), args.consis_lambda)
+            alpha_number_line(idx_list, draw_p1.flatten(), draw_target, draw_pred, data_name, 'identity', 'others', epoch, 100. * correct / len(test_loader.dataset), dataset_path, args.consis_lambda, True, by_class=True)
+    
+    
         print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
             test_loss, correct, len(test_loader.dataset), 100.*correct / len(test_loader.dataset), da1, params_mean1[0], da2, params_mean2[0], da3, params_mean3[0], da4, params_mean4[0], da5, params_mean5[0]))
         
         return test_loss, correct / len(test_loader.dataset), params_mean1[0], params_mean2[0], params_mean3[0], params_mean4[0], params_mean5[0]
 
 def test_model():
-    base_path = './result/Proposed_{}_identity-jitter-windowWarp-magnitudeWarp-timeWarp_{}_{}'.format(data_name, args.consis_lambda, epochs)
+    base_path = './result/Proposed_{}_{}-{}-{}-{}-{}_{}_{}'.format(data_name, args.da1, args.da2, args.da3, args.da4, args.da5, args.consis_lambda, epochs)
     ts_encoder1.load_state_dict(torch.load(base_path+'/ts_encoder1.pth', map_location='cuda:0'))
     ts_encoder2.load_state_dict(torch.load(base_path+'/ts_encoder2.pth', map_location='cuda:0'))
     ts_encoder3.load_state_dict(torch.load(base_path+'/ts_encoder3.pth', map_location='cuda:0'))
@@ -255,11 +279,11 @@ def test_model():
     ts_encoder5.load_state_dict(torch.load(base_path+'/ts_encoder5.pth', map_location='cuda:0'))
     gating5.load_state_dict(torch.load(base_path+'/gating5.pth', map_location='cuda:0'))
     classifier.load_state_dict(torch.load(base_path+'/classifier.pth', map_location='cuda:0'))
-    test(epochs)
+    test(epochs, True)
     exit(0)
 
 if __name__ == "__main__":
-    #test_model()
+    test_model()
     best_loss, best_acc = 10e5, 0.
     for epoch in range(1, epochs+1):
         print('Epoch:{}/{}'.format(epoch, epochs))
