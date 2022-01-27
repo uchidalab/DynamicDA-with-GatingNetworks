@@ -1,5 +1,5 @@
 # Dynamic Data Augmentation with Gating Networks
-This is an official PyTorch implementation of the paper *Dynamic Data Augmentation with Gating Networks* which is submitted to **ICASSP2022** (under reviewing).  
+This is an official PyTorch implementation of the paper *Dynamic Data Augmentation with Gating Networks* which is submitted to **ICPR2022** (under review).  
 
 ## Usage
 
@@ -10,26 +10,26 @@ This is an official PyTorch implementation of the paper *Dynamic Data Augmentati
 
 #### Dataset
 In experiments, we used [2018 UCR Time Series Archive](https://www.cs.ucr.edu/~eamonn/time_series_data_2018/).  
-Please be cautious that we modified these datasets as mentioned in the paper.  
-Put dataset folders on ```/dataset```.  
-Plus, set the dataset paths in a function ```data_generator``` in the script ```/utils/dataload.py```   
+Please be cautious that we modified these datasets in the way mentioned in the paper.  
+Put dataset folders inside ```/dataset```.  
+Plus, set the dataset path in a function named ```data_generator``` in the script of ```/utils/dataload.py```   
 
 ### Components
 
 #### Models
 * No Augmentation --- refer to ```no_augmentation.py```.  
-* Concatenate --- refer to ```concat.py```.  
 * Proposed --- refer to ```proposed.py```. You can change lambda value in the paper by ```consis_lambda``` argument.  
-* Ensemble -- refer to ```ensemble.py```.  
-* Feature Combination with Equal Weights -- refer to ```equal_weights.py```.  This is listed as "w/o GateNet & consistency loss" on the table.  
+* Feature Combination with Equal Weights -- refer to ```equal_weights.py```.  This is listed as "w/o GateNet & feature consistency loss" on the table.  
+<!--* Ensemble -- refer to ```ensemble.py```.
+* Concatenate --- refer to ```concat.py```.  -->  
 
 For execution, run ```experiment.sh```.  
-You will get csv file which save every 25 epoch's result and saved model parameters for the final epoch.  
-You can test your saved parameters by enabling ```test_model()``` under ```if __name__ == "__main__":``` in each python file above.  
+You will get a csv file that contains every 25 epoch's result and a frozen model at the final epoch.  
+You can test the frozen model by uncommenting ```#test_model()``` under ```if __name__ == "__main__":``` in each python file above.  
 
 #### Data Augmentation methods
 Each DA method implementation is based on [our preceeding journal](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254841).
-Please take a look on ```/utils/augmentation.py``` for these codes.  
+Please take a look on ```/utils/augmentation.py``` for the codes. Adopted methods are the following:  
 * Identity --- the original time series with no augmentation.  
 * Jittering --- adds Gaussian noise to the time series.  
 * Magnitude Warping --- multiply the time series by a smooth curve defined by cublic spline.  
