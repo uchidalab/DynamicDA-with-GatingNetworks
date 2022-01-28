@@ -16,7 +16,7 @@ Put datasets inside ```/dataset```, and set the dataset path in the function nam
 ### Components
 
 #### Models
-* No Augmentation --- refer to ```no_augmentation.py```.  
+* No Augmentation --- refer to ```no_aug.py```.  
 * Proposed --- refer to ```proposed.py```. You can change lambda value in the paper by ```--consis_lambda```.  
 * Feature Combination with Equal Weights -- refer to ```equal_weights.py```.  This is listed as "w/o GateNet & feature consistency loss" in the paper.  
 <!--* Ensemble -- refer to ```ensemble.py```.
