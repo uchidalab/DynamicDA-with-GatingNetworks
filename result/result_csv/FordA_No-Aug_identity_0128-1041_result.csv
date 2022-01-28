@@ -1,0 +1,2 @@
+,dataset_name,network_name,train_loss,test_loss,train_acc,test_acc,epoch,da1
+0,FordA,No-Aug,0.0068661305122077465,0.007902706041932106,0.787281334400177,0.7530303001403809,1,identity

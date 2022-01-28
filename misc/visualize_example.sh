@@ -1,5 +1,11 @@
 cd ..
-python3 proposed.py --dataset PhalangesOutlinesCorrect --iterations 20000 --consis_lambda 1.0 --da1 'identity' --da2 'jitter' --da3 'magnitudeWarp' --da4 'windowWarp' --da5 'timeWarp' --batch_size 64 --lr 0.0001 --gpu_id 0 --limit_num 20000
+python3 proposed.py --dataset PhalangesOutlinesCorrect --iterations 20000 --consis_lambda 1.0 \
+                    --da1 'identity' --da2 'jitter' --da3 'magnitudeWarp' --da4 'windowWarp' --da5 'timeWarp' \
+                    --batch_size 64 --lr 0.0001 --gpu_id 0 --frozen --limit_num 20000
+cd ./misc
+python3 pentagon.py
+python3 sort_by_params.py
+python3 sample_arrange.py
 
 
 

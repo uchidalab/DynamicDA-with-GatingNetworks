@@ -39,6 +39,8 @@ parser.add_argument('--gpu_id', type=int, default=0,
                     help='set gpu_id')
 parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
+parser.add_argument('--frozen', action='store_true',
+                    help='use a frozen model to test')
 parser.add_argument('--limit_num', type=int, default=300,
                     help='max vizualized samples')
 args = parser.parse_args()
@@ -283,7 +285,9 @@ def test_model():
     exit(0)
 
 if __name__ == "__main__":
-    test_model()
+    if args.frozen == True:
+        test_model()
+    
     best_loss, best_acc = 10e5, 0.
     for epoch in range(1, epochs+1):
         print('Epoch:{}/{}'.format(epoch, epochs))

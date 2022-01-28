@@ -6,7 +6,7 @@ plt.rcParams['pdf.fonttype'] = 42
 plt.rcParams['ps.fonttype'] = 42
 
 
-def vis_pentagon(dataset, d1, d2, d3, d4, d5, target, nclass, ntest):
+def vis_pentagon(dataset, dirplace, d1, d2, d3, d4, d5, target, nclass, ntest):
 	c_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	da1_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	da2_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -71,7 +71,7 @@ def vis_pentagon(dataset, d1, d2, d3, d4, d5, target, nclass, ntest):
 			color="RebeccaPurple"),
 		showlegend=True)
 
-	fig.write_image("./pentagon_{}.pdf".format(dataset))
+	fig.write_image(dirplace+"/pentagon_{}.pdf".format(dataset))
 	
 
 if __name__=="__main__":
@@ -127,8 +127,9 @@ if __name__=="__main__":
 		ntest = 6164
 		nclass = 2
 	
-	df = pd.read_csv('{}.csv'.format(dataset), index_col=0)
+	dirplace = '../{}/'.format(dataset)
+	df = pd.read_csv(dirplace+'{}.csv'.format(dataset), index_col=0)
 	print(df.mean())
 	print(df.std())
-	vis_pentagon(dataset, list(df['0']),list(df['1']),list(df['2']),list(df['3']),list(df['4']), list(df['5']), nclass, ntest)
+	vis_pentagon(dataset, dirplace, list(df['0']),list(df['1']),list(df['2']),list(df['3']),list(df['4']), list(df['5']), nclass, ntest)
 	

@@ -1,0 +1,2 @@
+,dataset_name,network_name,train_loss,test_loss,train_acc,test_acc,epoch,da1,param1,da2,param2,da3,param3,da4,param4,da5,param5,consis_lambda
+0,FordA,Proposed,0.011028189212083817,0.01194068230688572,0.7900583148002625,0.699999988079071,1,identity,0.24898883700370789,jitter,0.23323236405849457,windowWarp,0.12217116355895996,magnitudeWarp,0.2642967998981476,timeWarp,0.13131073117256165,1.0

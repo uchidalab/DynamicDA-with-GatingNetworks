@@ -25,5 +25,5 @@ def sort_by_params(target_dir, first=1):
 if __name__=="__main__":
 	dataset = 'PhalangesOutlinesCorrect'
 	epochs = '712'
-	target_dir = './alpha_{}_identity-vs-others_1.0/{}-test'.format(dataset, epochs)
+	target_dir = '../{}/alpha_{}_identity-vs-others_1.0/{}-test'.format(dataset, dataset, epochs)
 	sort_by_params(target_dir)

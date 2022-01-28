@@ -32,7 +32,7 @@ if __name__=="__main__":
 	dataset_list = ['FordA', 'NonInvasiveFetalECGThorax1', 'ElectricDevices', 'StarLightCurves', 'FordB', 'NonInvasiveFetalECGThorax2', 'TwoPatterns', 'PhalangesOutlinesCorrect', 'Wafer', 'Crop', 'MelbournePedestrian_adjusted', 'HandOutlines']
 	
 	for dataset in dataset_list:	
-		target_dir = './Sample_visualize_{}'.format(dataset)
+		target_dir = '../{}/Sample_visualize_{}'.format(dataset, dataset)
 		try:
 			sample_arrange(target_dir)
 		except:
