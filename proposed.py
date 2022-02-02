@@ -265,7 +265,7 @@ def test(epoch, test_model=False):
         
             read_save_png(draw_target, draw_pred, idx_list, data_name, epoch, dataset_path, "./{}/Sample_visualize_{}".format(data_name, data_name), "TEST", draw_p1, draw_p2, draw_p3, draw_p4, draw_p5)
             feature_by_class("TSNE", data_name, draw_z, draw_target, epoch, 100*correct/len(test_loader.dataset), "./{}".format(data_name), args.consis_lambda)
-            alpha_number_line(idx_list, draw_p1.flatten(), draw_target, draw_pred, data_name, 'identity', 'others', epoch, 100. * correct / len(test_loader.dataset), dataset_path, args.consis_lambda, True, by_class=True)
+            alpha_number_line(idx_list, draw_p1.flatten(), draw_target, draw_pred, data_name, 'identity', 'others', epoch, 100. * correct / len(test_loader.dataset), dataset_path, args.consis_lambda, num_most_common, True, by_class=True)
     
     
         print('      Test set: Average loss: {:.8f}, Accuracy: {:>4}/{:<4} ({:>3.1f}%) Average Params: {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}, {}|{:.4f}'.format(
