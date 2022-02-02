@@ -1,9 +1,6 @@
 # https://github.com/pytorch/vision/blob/master/torchvision/models/vgg.py
-import math
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from typing import Union, List, Dict, Any, cast
 from torchinfo import summary
 
 class TSEncoder(nn.Module): # CNN + MLP, Time Series Encoder

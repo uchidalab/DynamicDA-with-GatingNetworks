@@ -1,4 +1,4 @@
-import os, glob, shutil
+import os, glob
 
 def sort_by_params(target_dir, first=1):
     sample_list = glob.glob(target_dir+'/*.pdf')

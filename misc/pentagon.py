@@ -1,10 +1,5 @@
-import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.graph_objects as go
-
-plt.rcParams['pdf.fonttype'] = 42
-plt.rcParams['ps.fonttype'] = 42
-
 
 def vis_pentagon(dataset, dirplace, d1, d2, d3, d4, d5, target, nclass, ntest):
 	c_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

@@ -1,11 +1,9 @@
-import random
-import torch, os, glob
+import random, torch, os
+import collections
 from operator import itemgetter
 import argparse, datetime
 import numpy as np
-import matplotlib.pyplot as plt
 from torch.autograd import Variable
-from torchinfo import summary
 import torch.optim as optim
 import torch.nn.functional as F
 
@@ -247,6 +245,9 @@ def test(epoch, test_model=False):
         params_mean3 /= len(test_loader.dataset)
         params_mean4 /= len(test_loader.dataset)
         params_mean5 /= len(test_loader.dataset)
+        
+        c = collections.Counter(pred_list)
+        num_most_common = c.most_common()[0][1]
         
         # only when using saved model
         if test_model == True:

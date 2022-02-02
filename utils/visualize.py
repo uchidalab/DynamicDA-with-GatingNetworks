@@ -7,6 +7,10 @@ import numpy as np; np.random.seed(42)
 import pylab, copy, csv, os, glob, gc, time
 import torch
 
+import itertools
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
 plt.rcParams['pdf.fonttype'] = 42
 plt.rcParams['ps.fonttype'] = 42
 
@@ -59,33 +63,25 @@ def read_save_png(target_list, pred_list, idx_list, f_name, epoch, dataset_path,
     
     return 0
 
-def get_sample(f_name, num_of_class, dataset_path, csvtag):
-    with open(dataset_path+'/{}/{}_{}_Normalized.tsv'.format(f_name, f_name, csvtag)) as f:
-        cols = csv.reader(f, delimiter='\t')
-        all_cols, class_checker, samples_by_class = [], [], []
-        for col in cols:
-            if not col[0] in class_checker:
-                class_checker.append(col[0])
-                samples_by_class.append(col)
-                if(len(samples_by_class)==num_of_class):
-                    x = list(range(len(col[1:])))
-                    return x, samples_by_class
-
-def alpha_number_line(idx_list, x, targets, preds, f_name, da1name, da2name, epoch, acc, dataset_path, consis_lambda, test_bool, by_class=False):
+# histogram
+def alpha_number_line(idx_list, x, targets, preds, f_name, da1name, da2name, epoch, acc, dataset_path, consis_lambda, num_most_common, test_bool, by_class=False):
     dirname = "./{}/alpha_{}_{}-vs-{}_{}/".format(f_name, f_name, da1name, da2name, consis_lambda)
     dirname += "{}-test".format(epoch) if test_bool else "/{}".format(epoch)
     csvtag = "TEST" if test_bool else "VALIDATION"
     
     read_save_png(targets, preds, idx_list, f_name, epoch, dataset_path, dirname, csvtag, x)
 
-    cmap = plt.get_cmap("tab10")
+    cmap = plt.get_cmap("nipy_spectral")
     num_of_class, num_of_samples = max(targets)+1, len(targets)
     x_list = [ [] for i in range(num_of_class) ]
+    rand_list = random.sample(range(num_of_class), k=num_of_class)
+    rand_list = [ 0.95*rand_num/num_of_class for rand_num in rand_list ]
     
     for i in range(len(x)):
         x_list[targets[i]].append(x[i])
     
-    fig = plt.figure(figsize=(26, 10), tight_layout=True)
+    fig_x, fig_y = 100, 15*int((num_of_class-1)/6+1)
+    fig = plt.figure(dpi=100, figsize=(fig_x, fig_y), tight_layout=True)
     plt.rcParams["font.size"]=40
     bins_list = [i*0.01 for i in range(101)]
     #plt.title("{}, {:>5.0f}epoch, {:>5.0f}%(Acc), {:>5.0f}samples result".format(f_name, epoch, acc, num_of_samples))
@@ -99,10 +95,9 @@ def alpha_number_line(idx_list, x, targets, preds, f_name, da1name, da2name, epo
     
     # main (1/2)
     if by_class == False:
-        yheight = int(1.5*num_of_samples/num_of_class)
-        ax_list.append(fig.add_subplot(211, ylim=(0, yheight), yticks=np.arange(int(yheight/10), yheight+1, int(yheight/10)), xlim=(0.0,1.0))) # add grid
+        ax_list.append(fig.add_subplot(211, ylim=(0, num_most_common), yticks=np.arange(int(num_most_common/10), num_most_common+1, int(num_most_common/10)), xlim=(0.0,1.0))) # add grid
         for i in range(num_of_class):
-            line = ax_list[-1].hist(x_list[i], bins=bins_list, color=cmap(i), alpha=0.3, label="Class {}".format(i+1))
+            line = ax_list[-1].hist(x_list[i], bins=bins_list, color=cmap(rand_list[i]), alpha=0.3, label="Class {}".format(i+1))
         #ax_list[-1].grid()
         ax_list[-1].set_ylabel('more {} used'.format(da2name))
         ax_list[-1].set_xlabel('Ratio of {}'.format(da1name))
@@ -110,13 +105,11 @@ def alpha_number_line(idx_list, x, targets, preds, f_name, da1name, da2name, epo
         ax_reversed.tick_params(labelbottom=False, labelleft=False, labelright=False, labeltop=False)
         ax_reversed.set_ylabel('more {} used'.format(da1name))
     else:
-        yheight = int(num_of_samples/(min(40,9*num_of_class))) # 5 for wafer 1 for StarLC
         for i in range(num_of_class):
-			#ax_list.append(fig.add_subplot(2,num_of_class,i+1, ylim=(0, yheight), yticks=np.arange(0, yheight, int(yheight/10)), xlim=(0.0,1.0))) # add grid
-            #ax_list.append(fig.add_subplot(1,num_of_class,i+1, ylim=(0, yheight), yticks=np.arange(int(yheight/10), yheight+1, int(yheight/10)), xlim=(0.0,1.0))) # add grid
-            ax_list.append(fig.add_subplot(1,num_of_class,i+1, ylim=(0, yheight), xlim=(0.0,1.0))) # no grid
+			#ax_list.append(fig.add_subplot(2,num_of_class,i+1, ylim=(0, num_most_common), yticks=np.arange(0, num_most_common, int(num_most_common/10)), xlim=(0.0,1.0))) # add grid
+            ax_list.append(fig.add_subplot(int((num_of_class-1)/6+1),6,i+1, ylim=(0, num_most_common), xlim=(0.0,1.0))) # no grid
             
-            line = ax_list[-1].hist(x_list[i], bins=bins_list, color=cmap(i), label="Class {}".format(i+1))
+            line = ax_list[-1].hist(x_list[i], bins=bins_list, color=cmap(rand_list[i]), label="Class {}".format(i+1))
             ax_list[-1].grid(alpha=0.5)
             ax_list[-1].set_ylabel('more {} used'.format(da2name))
             ax_list[-1].set_xlabel('Ratio of {}'.format(da1name))
@@ -138,7 +131,10 @@ def alpha_number_line(idx_list, x, targets, preds, f_name, da1name, da2name, epo
     
     # samples for each class (2/2)
     # cnt = 0
-    # x, samples_by_class = get_sample(f_name, num_of_class, dataset_path, csvtag)
+    
+    # x, samples_by_class = get_sample(f_name, num_of_class, dataset_path, csvtag) # obsolete
+    # input_length, n_classes, _ = get_length_numofclass(data_name) # new
+    
     # samples_by_order = []
     # for i in range(num_of_class):
         # for j in range(num_of_class):
@@ -159,8 +155,6 @@ def alpha_number_line(idx_list, x, targets, preds, f_name, da1name, da2name, epo
     else:
         for i in range(num_of_class):
             ax_list[i].legend(bbox_to_anchor=(0, 1.0), borderaxespad=0, loc="upper left", ncol=1)
-        
-    fig.tight_layout()
     
     if test_bool:
         fig.savefig("./{}/alpha_{}_{}-vs-{}_{}/{}-test.pdf".format(f_name, f_name, da1name, da2name, consis_lambda, epoch))
@@ -170,20 +164,6 @@ def alpha_number_line(idx_list, x, targets, preds, f_name, da1name, da2name, epo
     plt.clf()
     plt.close()
 
-import matplotlib.pyplot as plt
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
-import matplotlib.cm as cm
-import random; random.seed(42)
-import numpy as np; np.random.seed(42)
-import pylab, copy, csv, os, glob, gc, time
-import torch
-
-plt.rcParams['pdf.fonttype'] = 42
-plt.rcParams['ps.fonttype'] = 42
-
-import itertools
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
 
 def feature_by_class(vis_tag, f_name, z, target, epoch, acc, feature_img_path, consis_lambda):
     cmap = plt.get_cmap("tab10") # "terrain" & set num_of_class
