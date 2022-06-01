@@ -35,10 +35,10 @@ Please take a look on ```/utils/augmentation.py``` for the codes. Adopted method
 * **Window Warping** : selects a random window of 10% of the original time series length and warps the window by 0.5 to 2 times.  
 
 ## Citation
-[D. Oba, S. Matsuo and B. K. Iwana, "Dynamic Data Augmentation with Gating Networks," arXiv, 2021.](https://arxiv.org/abs/2111.03253)  
+[D. Oba, S. Matsuo and B. K. Iwana, "Dynamic Data Augmentation with Gating Networks for Time Series Recognition," arXiv, 2021.](https://arxiv.org/abs/2111.03253)  
 ```
 @article{oba2021dynamic,
-  title={Dynamic Data Augmentation with Gating Networks},
+  title={Dynamic Data Augmentation with Gating Networks for Time Series Recognition},
   author={Daisuke Oba, Shinnosuke Matsuo and Brian Kenji Iwana},
   journal={arXiv preprint arXiv:2111.03253},
   year={2021}
